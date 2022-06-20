@@ -3,3 +3,7 @@ checkpoints/*
 logs/*
 **/__pycache__/*
 **/*.tfrecord
+
+data/*
+
+*.DS_Store

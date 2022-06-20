@@ -1,5 +1,6 @@
 from absl import app, flags, logging
 from absl.flags import FLAGS
+from glob import glob
 import cv2
 import os
 import numpy as np
@@ -30,6 +31,11 @@ def main(_argv):
                          backbone_type=cfg['backbone_type'],
                          training=False)
 
+    model2 = ArcFaceModel(size=cfg['input_size'],
+                         backbone_type=cfg['backbone_type'],
+                         num_classes=300,
+                         training=True)
+
     ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
     if ckpt_path is not None:
         print("[*] load ckpt from {}".format(ckpt_path))
@@ -39,15 +45,30 @@ def main(_argv):
         exit()
 
     if FLAGS.img_path:
-        print("[*] Encode {} to ./output_embeds.npy".format(FLAGS.img_path))
-        img = cv2.imread(FLAGS.img_path)
-        img = cv2.resize(img, (cfg['input_size'], cfg['input_size']))
-        img = img.astype(np.float32) / 255.
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        if len(img.shape) == 3:
-            img = np.expand_dims(img, 0)
-        embeds = l2_norm(model(img))
-        np.save('./output_embeds.npy', embeds)
+        classes = {k: v for k, v in enumerate([z.split('/')[-1] for z in glob(f"{FLAGS.img_path}/*", recursive=False)])}
+        imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
+
+        print(model.summary())
+        for img_fn in imgs:
+            img = cv2.imread(img_fn)
+            img = cv2.resize(img, (224, 224))
+            img = img.astype(np.float32) / 255.
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            if len(img.shape) == 3:
+                img = np.expand_dims(img, 0)
+            embd = model(img)
+
+            a = model2.predict([img, embd])
+            print(classes[np.argmax(a)], img_fn)
+        # print("[*] Encode {} to ./output_embeds.npy".format(FLAGS.img_path))
+        # img = cv2.imread(FLAGS.img_path)
+        # img = cv2.resize(img, (cfg['input_size'], cfg['input_size']))
+        # img = img.astype(np.float32) / 255.
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # if len(img.shape) == 3:
+        #     img = np.expand_dims(img, 0)
+        # embeds = l2_norm(model(img))
+        # np.save('./output_embeds.npy', embeds)
     else:
         print("[*] Loading LFW, AgeDB30 and CFP-FP...")
         lfw, agedb_30, cfp_fp, lfw_issame, agedb_30_issame, cfp_fp_issame = \
@@ -59,17 +80,17 @@ def main(_argv):
             is_ccrop=cfg['is_ccrop'])
         print("    acc {:.4f}, th: {:.2f}".format(acc_lfw, best_th))
 
-        print("[*] Perform Evaluation on AgeDB30...")
-        acc_agedb30, best_th = perform_val(
-            cfg['embd_shape'], cfg['batch_size'], model, agedb_30,
-            agedb_30_issame, is_ccrop=cfg['is_ccrop'])
-        print("    acc {:.4f}, th: {:.2f}".format(acc_agedb30, best_th))
+        # print("[*] Perform Evaluation on AgeDB30...")
+        # acc_agedb30, best_th = perform_val(
+        #     cfg['embd_shape'], cfg['batch_size'], model, agedb_30,
+        #     agedb_30_issame, is_ccrop=cfg['is_ccrop'])
+        # print("    acc {:.4f}, th: {:.2f}".format(acc_agedb30, best_th))
 
-        print("[*] Perform Evaluation on CFP-FP...")
-        acc_cfp_fp, best_th = perform_val(
-            cfg['embd_shape'], cfg['batch_size'], model, cfp_fp, cfp_fp_issame,
-            is_ccrop=cfg['is_ccrop'])
-        print("    acc {:.4f}, th: {:.2f}".format(acc_cfp_fp, best_th))
+        # print("[*] Perform Evaluation on CFP-FP...")
+        # acc_cfp_fp, best_th = perform_val(
+        #     cfg['embd_shape'], cfg['batch_size'], model, cfp_fp, cfp_fp_issame,
+        #     is_ccrop=cfg['is_ccrop'])
+        # print("    acc {:.4f}, th: {:.2f}".format(acc_cfp_fp, best_th))
 
 
 if __name__ == '__main__':

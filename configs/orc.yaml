@@ -1,0 +1,22 @@
+# general
+batch_size: 64
+input_size: 224
+embd_shape: 512
+sub_name: 'arc_res50'
+backbone_type: 'ResNet50' # 'ResNet50', 'MobileNetV2'
+head_type: ArcHead # 'ArcHead', 'NormHead'
+is_ccrop: False # central-cropping or not
+
+# train
+train_dataset: './data/orchidaceae.tfrecord'
+binary_img: True
+num_classes: 300
+num_samples: 9419
+epochs: 1
+base_lr: 0.0001
+w_decay: !!float 5e-4
+save_steps: 147
+
+# test
+test_dataset: '/your/path/to/test_dataset'
+sub_name: 'orc'

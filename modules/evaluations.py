@@ -3,7 +3,7 @@ This script was modified from https://github.com/ZhaoJ9014/face.evoLVe.PyTorch
 """
 import os
 import cv2
-import bcolz
+# import bcolz
 import numpy as np
 import tqdm
 from sklearn.model_selection import KFold

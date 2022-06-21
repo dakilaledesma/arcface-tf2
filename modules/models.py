@@ -5,6 +5,7 @@ from tensorflow.keras.layers import (
     Dropout,
     Flatten,
     Input,
+    GlobalAveragePooling2D
 )
 from tensorflow.keras.applications import (
     MobileNetV2,
@@ -91,6 +92,12 @@ def ArcFaceModel(size=None, channels=3, num_classes=None, name='arcface_model',
                              logist_scale=logist_scale)(embds, labels)
         else:
             logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
-        return Model((inputs, labels), logist, name=name)
+        # output = GlobalAveragePooling2D(name='avg_pool')(logist)
+        # output = Dense(1, activation='softmax', name='fc1000')(logist)
+        output = BatchNormalization()(logist)
+        output = Dropout(rate=0.5)(output)
+        output = Flatten()(output)
+        output = Dense(num_classes, kernel_regularizer=_regularizer(w_decay), activation="softmax")(output)
+        return Model((inputs, labels), (logist, output), name=name)
     else:
-        return Model(inputs, embds, name=name)
+        return Model(inputs, output, name=name)

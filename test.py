@@ -31,10 +31,6 @@ def main(_argv):
                          backbone_type=cfg['backbone_type'],
                          training=False)
 
-    model2 = ArcFaceModel(size=cfg['input_size'],
-                         backbone_type=cfg['backbone_type'],
-                         num_classes=300,
-                         training=True)
 
     ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
     if ckpt_path is not None:
@@ -48,7 +44,7 @@ def main(_argv):
         classes = {k: v for k, v in enumerate([z.split('/')[-1] for z in glob(f"{FLAGS.img_path}/*", recursive=False)])}
         imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
 
-        print(model.summary())
+        print(model.layers)
         for img_fn in imgs:
             img = cv2.imread(img_fn)
             img = cv2.resize(img, (224, 224))
@@ -56,10 +52,8 @@ def main(_argv):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if len(img.shape) == 3:
                 img = np.expand_dims(img, 0)
-            embd = model(img)
+            print(model.predict([img]).shape)
 
-            a = model2.predict([img, embd])
-            print(classes[np.argmax(a)], img_fn)
         # print("[*] Encode {} to ./output_embeds.npy".format(FLAGS.img_path))
         # img = cv2.imread(FLAGS.img_path)
         # img = cv2.resize(img, (cfg['input_size'], cfg['input_size']))

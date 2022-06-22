@@ -52,7 +52,7 @@ def main(_argv):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if len(img.shape) == 3:
                 img = np.expand_dims(img, 0)
-            print(model.predict([img]).shape)
+            print(np.argmax(model.predict(img)), img_fn)
 
         # print("[*] Encode {} to ./output_embeds.npy".format(FLAGS.img_path))
         # img = cv2.imread(FLAGS.img_path)

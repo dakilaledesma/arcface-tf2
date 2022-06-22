@@ -8,7 +8,7 @@ head_type: ArcHead # 'ArcHead', 'NormHead'
 is_ccrop: False # central-cropping or not
 
 # train
-train_dataset: './data/orchidaceae.tfrecord'
+train_dataset: './data/orc.tfrecord'
 binary_img: True
 num_classes: 300
 num_samples: 9419

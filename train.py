@@ -10,7 +10,6 @@ from modules.losses import SoftmaxLoss
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf
 import modules.dataset as dataset
 
-
 flags.DEFINE_string('cfg_path', './configs/arc_res50.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'fit', ['fit', 'eager_tf'],
@@ -113,7 +112,7 @@ def main(_):
         model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
             cfg['sub_name'], epochs, steps % steps_per_epoch))
     else:
-        model.compile(optimizer=optimizer, loss=loss_fn)
+        model.compile(optimizer=optimizer, loss=[loss_fn, 'categorical_crossentropy'])
 
         mc_callback = ModelCheckpoint(
             'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',

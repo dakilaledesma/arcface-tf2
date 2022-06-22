@@ -82,6 +82,9 @@ def ArcFaceModel(size=None, channels=3, num_classes=None, name='arcface_model',
 
     x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
 
+    output = GlobalAveragePooling2D(name='avg_pool')(x)
+    output = Dense(300, activation='softmax', name='fc1000')(output)
+
     embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
 
     if training:
@@ -92,8 +95,7 @@ def ArcFaceModel(size=None, channels=3, num_classes=None, name='arcface_model',
                              logist_scale=logist_scale)(embds, labels)
         else:
             logist = NormHead(num_classes=num_classes, w_decay=w_decay)(embds)
-        output = GlobalAveragePooling2D(name='avg_pool')(x)
-        output = Dense(300, activation='softmax', name='fc1000')(output)
+        
         # output = BatchNormalization()(x)
         # output = Dropout(rate=0.5)(output)
         # output = Flatten()(output)

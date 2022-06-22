@@ -1,6 +1,4 @@
 import tensorflow as tf
-from tf.keras.utils import to_categorical
-
 
 def _parse_tfrecord(binary_img=False, is_ccrop=False):
     def parse_tfrecord(tfrecord):
@@ -19,7 +17,6 @@ def _parse_tfrecord(binary_img=False, is_ccrop=False):
 
         y_train = tf.cast(x['image/source_id'], tf.float32)
         y_classif = tf.one_hot(x['image/source_id'], 300)
-
         x_train = _transform_images(is_ccrop=is_ccrop)(x_train)
         y_train = _transform_targets(y_train)
         return (x_train, y_train), (y_train, y_classif)

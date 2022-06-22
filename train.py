@@ -115,8 +115,8 @@ def main(_):
         model.compile(optimizer=optimizer, loss=[loss_fn, 'categorical_crossentropy'])
 
         mc_callback = ModelCheckpoint(
-            'checkpoints/' + cfg['sub_name'] + '/e_{epoch}_b_{batch}.ckpt',
-            save_freq=cfg['save_steps'] * cfg['batch_size'], verbose=1,
+            'checkpoints/' + cfg['sub_name'] + '/e_{epoch}.ckpt',
+            save_freq="epoch", verbose=1,
             save_weights_only=True)
         tb_callback = TensorBoard(log_dir='logs/',
                                   update_freq=cfg['batch_size'] * 5,
@@ -130,6 +130,8 @@ def main(_):
                   steps_per_epoch=steps_per_epoch,
                   callbacks=callbacks,
                   initial_epoch=epochs - 1)
+
+        # model.save('checkpoints/' + cfg['sub_name'])
 
     print("[*] training done!")
 

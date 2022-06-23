@@ -1,3 +1,4 @@
+from tabnanny import verbose
 from absl import app, flags, logging
 from absl.flags import FLAGS
 from glob import glob
@@ -5,6 +6,7 @@ import cv2
 import os
 import numpy as np
 import tensorflow as tf
+from tqdm import tqdm
 
 from modules.evaluations import get_val_data, perform_val
 from modules.models import ArcFaceModel
@@ -45,14 +47,14 @@ def main(_argv):
         imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
 
         print(model.layers)
-        for img_fn in imgs:
+        for img_fn in tqdm(imgs, total=len(list(imgs))):
             img = cv2.imread(img_fn)
             img = cv2.resize(img, (224, 224))
             img = img.astype(np.float32) / 255.
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if len(img.shape) == 3:
                 img = np.expand_dims(img, 0)
-            print(np.argmax(model.predict(img)), img_fn)
+            print(np.argmax(model.predict(img, verbose=0)), img_fn)
 
         # print("[*] Encode {} to ./output_embeds.npy".format(FLAGS.img_path))
         # img = cv2.imread(FLAGS.img_path)

@@ -42,7 +42,7 @@ def main(_argv):
         print("[*] Cannot find ckpt from {}.".format(ckpt_path))
         exit()
 
-    if FLAGS.img_path: 
+    if FLAGS.img_path:
         imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
         predictions = []
         for img_fn in tqdm(imgs, total=len(list(imgs))):

@@ -43,7 +43,6 @@ def main(_argv):
         exit()
 
     if FLAGS.img_path:
-
         imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
         predictions = []
         for img_fn in tqdm(imgs, total=len(list(imgs))):
@@ -54,12 +53,11 @@ def main(_argv):
             if len(img.shape) == 3:
                 img = np.expand_dims(img, 0)
 
-            predictions.append(f"{np.argmax(model.predict(img), verbose=0)},{img_fn}")
+            predictions.append(f"{np.argmax(model.predict(img, verbose=0))},{img_fn}")
         
         results_file = open("results.csv", 'w')
         results_file.write('\n'.join(predictions))
         results_file.close()
-
 
         # print("[*] Encode {} to ./output_embeds.npy".format(FLAGS.img_path))
         # img = cv2.imread(FLAGS.img_path)

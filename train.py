@@ -112,7 +112,7 @@ def main(_):
         model.save_weights('checkpoints/{}/e_{}_b_{}.ckpt'.format(
             cfg['sub_name'], epochs, steps % steps_per_epoch))
     else:
-        model.compile(optimizer=optimizer, loss=[loss_fn, 'categorical_crossentropy'])
+        model.compile(optimizer=optimizer, loss=[loss_fn, 'categorical_crossentropy'], metrics=["accuracy"])
 
         mc_callback = ModelCheckpoint(
             'checkpoints/' + cfg['sub_name'] + '/e_{epoch}.ckpt',

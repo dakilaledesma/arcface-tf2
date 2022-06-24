@@ -1,6 +1,6 @@
 import os
 from sklearn.metrics import accuracy_score
-result_file = open("arcface_results.csv")
+result_file = open("results.csv")
 result_lines = result_file.readlines()
 rename_file = open("rename_results.csv")
 rename_lines = rename_file.readlines()

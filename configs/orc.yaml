@@ -1,6 +1,7 @@
 # general
 batch_size: 64
 input_size: 224
+test_size: 384
 embd_shape: 512
 sub_name: 'arc_res50'
 backbone_type: 'ResNet50' # 'ResNet50', 'MobileNetV2'

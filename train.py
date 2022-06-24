@@ -131,7 +131,7 @@ def main(_):
                   callbacks=callbacks,
                   initial_epoch=epochs - 1)
 
-        # model.save('checkpoints/' + cfg['sub_name'])
+        model.save('checkpoints/' + "fullmodel")
 
     print("[*] training done!")
 

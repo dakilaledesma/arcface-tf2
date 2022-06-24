@@ -52,7 +52,7 @@ def main(_argv):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if len(img.shape) == 3:
                 img = np.expand_dims(img, 0)
-            pred_string = f"{np.argmax(model.predict(img, verbose=0).flatten())},{img_fn}"
+            pred_string = f"{np.argmax(model(img))},{img_fn}"
             predictions.append(pred_string)
         
         results_file = open("results.csv", 'w')

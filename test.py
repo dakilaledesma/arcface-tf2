@@ -44,48 +44,24 @@ def main(_argv):
         exit()
 
     if FLAGS.img_path:
-        if FLAGS.head_type == "classif":
-            imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
-            predictions = []
-            for img_fn in tqdm(imgs, total=len(list(imgs))):
-                img = cv2.imread(img_fn)
-                img = cv2.resize(img, (224, 224))
-                img = img.astype(np.float32) / 255.
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                if len(img.shape) == 3:
-                    img = np.expand_dims(img, 0)
+        imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
+        predictions = []    
+        for img_fn in tqdm(imgs, total=len(list(imgs))):
+            img = cv2.imread(img_fn)
+            img = cv2.resize(img, (224, 224))
+            img = img.astype(np.float32) / 255.
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            if len(img.shape) == 3:
+                img = np.expand_dims(img, 0)
+            if FLAGS.head_type == "classif":
                 pred_string = f"{np.argmax(model(img))},{img_fn}"
-                predictions.append(pred_string)
-            
-            results_file = open("results.csv", 'w')
-            results_file.write('\n'.join(predictions))
-            results_file.close()
-        elif FLAGS.head_type == "all":
-            imgs = glob(f"{FLAGS.img_path}/**/*.*", recursive=True)
-            predictions = []
-            for img_fn in tqdm(imgs, total=len(list(imgs))):
-                img = cv2.imread(img_fn)
-                img = cv2.resize(img, (224, 224))
-                img = img.astype(np.float32) / 255.
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                if len(img.shape) == 3:
-                    img = np.expand_dims(img, 0)
+            elif FLAGS.head_type == "all":
                 pred_string = f"{np.argmax(model([img, [np.zeros(cfg['num_classes'])]]))},{img_fn}"
-                predictions.append(pred_string)
+            predictions.append(pred_string)
             
-            results_file = open("results.csv", 'w')
-            results_file.write('\n'.join(predictions))
-            results_file.close()
-
-        # print("[*] Encode {} to ./output_embeds.npy".format(FLAGS.img_path))
-        # img = cv2.imread(FLAGS.img_path)
-        # img = cv2.resize(img, (cfg['input_size'], cfg['input_size']))
-        # img = img.astype(np.float32) / 255.
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # if len(img.shape) == 3:
-        #     img = np.expand_dims(img, 0)
-        # embeds = l2_norm(model(img))
-        # np.save('./output_embeds.npy', embeds)
+        results_file = open("results.csv", 'w')
+        results_file.write('\n'.join(predictions))
+        results_file.close()
     else:
         print("[*] Loading LFW, AgeDB30 and CFP-FP...")
         lfw, agedb_30, cfp_fp, lfw_issame, agedb_30_issame, cfp_fp_issame = \

@@ -32,10 +32,8 @@ def main(_argv):
     set_memory_growth()
 
     cfg = load_yaml(FLAGS.cfg_path)
-    model1 = load_model("checkpoints/fullmodel", custom_objects={"softmax_loss": SoftmaxLoss})
-    # model = model1
-    model = Model(model1.get_layer("input_image").input, outputs=model1.get_layer("fc1000").output)
-    # print(model.summary())
+    model = load_model("checkpoints/fullmodel", custom_objects={"softmax_loss": SoftmaxLoss})
+    print(model.summary())
 
 
     # ckpt_path = tf.train.latest_checkpoint('./checkpoints/' + cfg['sub_name'])
@@ -58,6 +56,12 @@ def main(_argv):
         for img_fn in tqdm(imgs, total=len(list(imgs))):
             img = cv2.imread(img_fn)
             img = cv2.resize(img, (cfg['test_size'], cfg['test_size']))
+            cat = img_fn.split("/")[-2]
+            # print("@@@@@@@@", img_fn, cat)
+            # cat = int(cat_dict[cat])
+            label = np.zeros((300,), dtype=int)
+            label[int(cat)] = 1
+            # print("")
             center = [cfg['test_size'] / 2, cfg['test_size'] / 2]
             x = int(center[1] - cfg['input_size'] // 2)
             y = int(center[0] - cfg['input_size'] // 2)
@@ -66,11 +70,11 @@ def main(_argv):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if len(img.shape) == 3:
                 img = np.expand_dims(img, 0)
-            pred_string = f"{np.argmax(model(img))},{img_fn}"
+            pred_string = f"{np.argmax(model([img, [label]])[0])},{img_fn}"
             # print(pred_string)
             predictions.append(pred_string)
 
-        out_file = open("results_test1.csv", 'w')
+        out_file = open("results_train.csv", 'w')
         out_file.write('\n'.join(predictions))
         out_file.close()
     else:

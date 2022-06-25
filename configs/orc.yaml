@@ -13,7 +13,7 @@ train_dataset: './data/orc.tfrecord'
 binary_img: True
 num_classes: 300
 num_samples: 9419
-epochs: 1
+epochs: 120
 base_lr: 0.0001
 w_decay: !!float 5e-4
 save_steps: 147
